@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: k12-postgres
+    environment:
+      POSTGRES_DB: k12db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Safeguard123
+    ports:
+      - "5434:5432"
+    volumes:
+      - k12-postgres-data:/var/lib/postgresql
+    networks:
+      - k12-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d k12db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: k12-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/k12db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Safeguard123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: Xskno0Cjj0o2cuN8fYorp5gPUUL41HRGdZECjgRjdJA=
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./accounts:/app/accounts
+    depends_on:
+       postgres:
+          condition: service_healthy
+    networks:
+      - k12-network
+    restart: unless-stopped
+
+volumes:
+  k12-postgres-data:
+
+networks:
+  k12-network:
+    driver: bridge

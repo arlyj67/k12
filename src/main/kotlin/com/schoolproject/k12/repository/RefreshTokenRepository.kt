@@ -1,0 +1,18 @@
+package com.schoolproject.k12.repository
+
+import com.schoolproject.k12.entity.RefreshToken
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
+import org.springframework.stereotype.Repository
+import java.util.UUID
+
+@Repository
+interface RefreshTokenRepository : JpaRepository<RefreshToken, UUID> {
+
+    fun findByTokenHash(tokenHash: String): RefreshToken?
+
+    @Modifying
+    @Query("UPDATE RefreshToken r SET r.revoked = true WHERE r.user.id = :userId AND r.revoked = false")
+    fun revokeAllByUserId(userId: UUID): Int
+}
