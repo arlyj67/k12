@@ -25,8 +25,18 @@ data class StudentResponse (
     val createdAt: LocalDateTime
 )
 
+data class StudentPendingResponse (
+    val id: UUID?,
+    val studentNumber: String,
+    val fullName: String,
+    val gradeCompleted: String,
+    val gradeCompletedYear: String,
+)
+
 data class StudentListResponse (
     val id: UUID?,
     val studentNumber: String,
-    val fullName: String
+    val fullName: String,
+    val gradeCompleted: String,
+    val gradeCompletedYear: String,
 )

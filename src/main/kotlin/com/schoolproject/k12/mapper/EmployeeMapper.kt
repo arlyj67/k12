@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component
 @Component
 class EmployeeMapper {
 
-    fun toEntity(dto: EmployeeRequest, user: User, school: School): Employee {
+    fun toEntity(dto: EmployeeRequest, user: User, school: School, employeeNumber: String): Employee {
         return Employee(
             user = user,
             school = school,
-            employeeNumber = dto.employeeNumber,
+            employeeNumber = employeeNumber,
             firstName = dto.firstName,
             middleName = dto.middleName,
             lastName = dto.lastName,

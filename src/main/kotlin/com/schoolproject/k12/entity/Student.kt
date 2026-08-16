@@ -87,7 +87,13 @@ class Student (
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "updated_at")
-    var updatedAt: LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(name = "grade_completed")
+    val gradeCompleted: String,
+
+    @Column(name = "grade_completed_year")
+    val gradeCompletedYear: String,
 ) {
     val fullName: String
         get() = listOfNotNull(firstName, middleName, lastName).joinToString(" ")

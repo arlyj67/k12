@@ -6,7 +6,6 @@ import java.util.UUID
 
 data class EmployeeRequest (
     val schoolId: UUID,
-    val employeeNumber: String,
     val firstName: String,
     val middleName: String? = null,
     val lastName: String,

@@ -3,6 +3,7 @@ package com.schoolproject.k12.service.implementation
 import com.schoolproject.k12.dto.request.StudentRequest
 import com.schoolproject.k12.dto.response.StudentResponse
 import com.schoolproject.k12.dto.response.StudentListResponse
+import com.schoolproject.k12.dto.response.StudentPendingResponse
 import com.schoolproject.k12.entity.Student
 import com.schoolproject.k12.entity.User
 import com.schoolproject.k12.mapper.StudentMapper
@@ -100,9 +101,10 @@ class StudentServiceImpl(
         return studentMapper.toResponse(student)
     }
 
-    override fun getPendingStudents(schoolId: UUID): List<StudentResponse> =
-        studentRepository.findBySchoolIdAndStatus(schoolId, StudentStatus.PENDING)
-            .map { studentMapper.toResponse(it) }
+    override fun getPendingStudents(schoolId: UUID): List<StudentPendingResponse> =
+        studentMapper.toPendingResponseList(
+            studentRepository.findBySchoolIdAndStatus(schoolId, StudentStatus.PENDING)
+        )
 
     override fun getStudentsListBySchool(schoolId: UUID): List<StudentListResponse> =
         studentMapper.toListResponseList(studentRepository.findBySchoolId(schoolId))

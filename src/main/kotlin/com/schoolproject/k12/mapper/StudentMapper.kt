@@ -2,6 +2,7 @@ package com.schoolproject.k12.mapper
 
 import com.schoolproject.k12.dto.request.StudentRequest
 import com.schoolproject.k12.dto.response.StudentListResponse
+import com.schoolproject.k12.dto.response.StudentPendingResponse
 import com.schoolproject.k12.dto.response.StudentResponse
 import com.schoolproject.k12.entity.School
 import com.schoolproject.k12.entity.Student
@@ -30,6 +31,8 @@ class StudentMapper {
             guardianContact = dto.guardianContact,
             guardianEmail = dto.guardianEmail,
             school = school,
+            gradeCompleted = dto.gradeCompleted,
+            gradeCompletedYear = dto.gradeCompletedYear,
         )
     }
 
@@ -55,11 +58,26 @@ class StudentMapper {
         )
     }
 
+    fun toPendingResponse(student: Student): StudentPendingResponse {
+        return StudentPendingResponse(
+            id = student.requireId(),
+            studentNumber = student.studentNumber,
+            fullName = student.fullName,
+            gradeCompleted = student.gradeCompleted,
+            gradeCompletedYear = student.gradeCompletedYear
+        )
+    }
+
+    fun toPendingResponseList(students: List<Student>): List<StudentPendingResponse> =
+        students.map { toPendingResponse(it) }
+
     fun toListResponse(student: Student): StudentListResponse{
         return StudentListResponse(
             id = student.id,
             studentNumber = student.studentNumber,
             fullName = student.fullName,
+            gradeCompleted = student.gradeCompleted,
+            gradeCompletedYear = student.gradeCompletedYear,
         )
     }
 

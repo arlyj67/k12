@@ -20,5 +20,7 @@ data class StudentRequest (
     val schoolYear: String,
     val guardianName: String,
     val guardianContact: String,
-    val guardianEmail: String
+    val guardianEmail: String,
+    val gradeCompleted: String,
+    val gradeCompletedYear: String
 )

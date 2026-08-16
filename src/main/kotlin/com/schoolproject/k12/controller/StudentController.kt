@@ -3,6 +3,7 @@ package com.schoolproject.k12.controller
 import com.schoolproject.k12.service.StudentService
 import com.schoolproject.k12.dto.request.StudentRequest
 import com.schoolproject.k12.dto.response.StudentListResponse
+import com.schoolproject.k12.dto.response.StudentPendingResponse
 import com.schoolproject.k12.dto.response.StudentResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -40,7 +41,7 @@ class StudentController(
     @GetMapping("/pending/{schoolId}")
     fun getPendingStudents(
         @PathVariable schoolId: UUID
-    ): ResponseEntity<List<StudentResponse>> =
+    ): ResponseEntity<List<StudentPendingResponse>> =
         ResponseEntity.ok(studentService.getPendingStudents(schoolId))
 
     // Get all students by school

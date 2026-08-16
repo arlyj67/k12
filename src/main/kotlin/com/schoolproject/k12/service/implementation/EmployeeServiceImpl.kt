@@ -25,7 +25,8 @@ class EmployeeServiceImpl(
     private val userRepository: UserRepository,
     private val employeeMapper: EmployeeMapper,
     private val userAccountService: UserAccountService,
-    private val pdfGeneratorService: PdfGeneratorService
+    private val pdfGeneratorService: PdfGeneratorService,
+    private val userNumberGenerator: UserNumberGenerator
 ) : EmployeeService {
 
     override fun createEmployee(dto: EmployeeRequest): EmployeeResponse {
@@ -36,23 +37,21 @@ class EmployeeServiceImpl(
             }
         }
 
-        if (employeeRepository.existsByEmployeeNumber(dto.employeeNumber)) {
-            throw IllegalArgumentException("Employee number already exists: ${dto.employeeNumber}")
-        }
-
         val school = schoolRepository.findById(dto.schoolId)
             .orElseThrow { NoSuchElementException("School not found with id: ${dto.schoolId}") }
 
+        val employeeNumber = userNumberGenerator.generate(dto.role)
+
         val credentials = userAccountService.createEmployeeAccount(
             email = dto.email,
-            employeeNumber = dto.employeeNumber,
+            employeeNumber = employeeNumber,
             role = dto.role,
             schoolId = dto.schoolId
         )
 
         // Save employee once, then reuse the persisted entity — no second toEntity() call
         val employee = employeeRepository.save(
-            employeeMapper.toEntity(dto, credentials.user, school)
+            employeeMapper.toEntity(dto, credentials.user, school, employeeNumber)
         )
 
         pdfGeneratorService.generateEmployeeAccountPDF(
@@ -90,8 +89,11 @@ class EmployeeServiceImpl(
             .orElseThrow { EntityNotFoundException("Employee not found with id: $id") }
 
         // Rebuild with all mutable fields from dto; preserve immutable identity fields from existing.
-        // Email is now included — previously it was silently dropped on every update.
+        // employeeNumber is never touched here — it's permanent once generated at creation.
         // School is intentionally preserved from existing — school transfers are a separate operation.
+        // NOTE: email removed — Employee entity has no email field (it lives on User).
+        // If you need to update the linked login email, that should go through UserAccountService
+        // against `existing.user`, not through this entity rebuild.
         val updated = employeeRepository.save(
             Employee(
                 id = existing.id,
@@ -104,7 +106,6 @@ class EmployeeServiceImpl(
                 role = dto.role,
                 contactNumber = dto.contactNumber,
                 address = dto.address,
-                email = dto.email,
                 status = dto.status,
                 createdAt = existing.createdAt
                 // updatedAt is managed by @PreUpdate — no need to set it manually
